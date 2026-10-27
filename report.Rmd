@@ -16,7 +16,7 @@ flow <- o("table1_cohort_flow.csv"); cap <- o("table2_treatment_capture.csv")
 mort <- o("table3_mortality.csv"); agree <- o("agreement_counts.csv")
 dif <- o("linked_minus_claims.csv"); fit <- o("data_fitness.csv")
 pat <- o("treatment_patterns.csv"); ext <- o("extension_missing_grade.csv")
-s3 <- o("step3_exclusions.csv"); cd <- o("mortality_in_capture_cohort_for_comparison.csv")
+s3 <- o("step3_exclusions.csv"); cd <- o("mortality_in_capture_cohort_for_comparison.csv"); eo <- o("ehr_only_detail.csv")
 a <- setNames(agree$n, agree$group); pc <- setNames(pat$n, pat$pattern)
 f1 <- function(x) formatC(x, format = "f", digits = 1)
 ci <- function(l, u) paste0(f1(l), " to ", f1(u))
@@ -46,7 +46,7 @@ kable(cap |> mutate(across(pct:ci_upper, f1)),
 
 Claims recorded treatment for `r f1(cap$pct[1])`% and the EHR for `r f1(cap$pct[2])`%; linking raised this to `r f1(cap$pct[3])`%. Of `r n_cap` patients, `r a["Both sources"]` had treatment in both sources, `r a["Claims only"]` in claims only, `r a["EHR only"]` in the EHR only and `r a["Neither"]` in neither. The linked-minus-claims difference (`r f1(dif$pct)` points) is exactly the EHR-only share, so its Wilson interval (`r ci(dif$ci_lower, dif$ci_upper)`) is the interval for the gain from linkage.
 
-The three figures describe the same patients, so they should not be read as independent groups. The sources mostly agree, and the differences are interpretable. Claims-only records were surgery, radiation and injected ADT, which is consistent with procedures done outside the EHR's health system. All EHR-only records in 9 patients without Part D were oral ADT, which claims cannot see without pharmacy coverage.
+The three figures describe the same patients, so they should not be read as independent groups. Claims-only records were surgery, radiation and injected ADT, consistent with care outside the EHR's health system. Of `r eo$n_ehr_only` EHR-only patients, `r eo$oral_adt_no_part_d` lacked Part D and had only oral ADT, which claims cannot see; `r eo$other` had surgery missing from claims despite Part D (unexplained; possibly a billing gap).
 
 ## 3. Initial treatment patterns
 
@@ -57,12 +57,12 @@ In linked records, `r pc["No recorded treatment"]` of `r n_cap` patients (`r f1(
 ## 4. 365-day all-cause mortality
 
 ```{r}
-kable(mort |> select(-endpoint) |> mutate(across(pct:ci_upper, f1)),
-      col.names = c("Cohort", "Denominator", "Deaths", "%", "95% CI low", "95% CI high"),
-      caption = "Table 3. Registry death on days 0-365 after diagnosis (inclusive). 95% CI: Wilson score.")
+kable(mort |> mutate(across(pct:ci_upper, f1)),
+      col.names = c("Endpoint", "Cohort", "Denominator", "Deaths", "%", "95% CI low", "95% CI high"),
+      caption = "Table 3. 365-day all-cause mortality from diagnosis (index date), baseline cohort. Deaths on days 0-365 inclusive; 95% CI: Wilson score.")
 ```
 
-`r mort$deaths` of `r n_base` baseline patients died within 365 days (`r f1(mort$pct)`%). The capture cohort would be the wrong denominator: it excludes, anyone whose death truncated observation before day 365, leaving only `r cd$deaths` deaths that fell exactly on day 365 (`r f1(cd$pct)`%). Mortality is not compared across treatment-pattern groups, since being treated requires surviving long enough (immortal-time bias).
+`r mort$deaths` of `r n_base` baseline patients died within 365 days (`r f1(mort$pct)`%). The capture cohort would be the wrong denominator: it excludes anyone whose death truncated observation before day 365, leaving only `r cd$deaths` deaths that fell exactly on day 365 (`r f1(cd$pct)`%). Mortality is not compared across treatment-pattern groups, since being treated requires surviving long enough (immortal-time bias).
 
 ## 5. Fitness for purpose
 
@@ -70,14 +70,14 @@ In the capture cohort, median baseline PSA among valid values was `r fit$median_
 
 Treatment can be missed in three ways. **Care outside the EHR's health system** is invisible to the EHR; the `r a["Claims only"]` claims-only patients show this happens. **No Part D** (`r fit$part_d_0_n` capture patients) hides oral ADT from claims; injected ADT remains visible. **Care in neither extract** cannot be measured here, so the linked `r f1(cap$pct[3])`% likely underestimates the true proportion treated.
 
-What we measured: agreement between sources, and which patients lack a recorded grade. We can only reason at treatment absent from both sources, and generalisation beyond fee-for-service Medicare men aged 66+. Eligibility rules also select patients: requiring 365 days of follow-up removed early deaths and patients who left either source. The Wilson intervals reflect sampling variation only; within this synthetic extract the proportions are exact, and the intervals do not account for systematic under-capture.
+What we measured: agreement between sources, and which patients lack a recorded grade. We can only reason about treatment absent from both sources, and generalisation beyond fee-for-service Medicare men aged 66+. Eligibility rules also select patients: requiring 365 days of follow-up removed early deaths and patients who left either source. The Wilson intervals reflect sampling variation only; within this synthetic extract the proportions are exact, and the intervals do not account for systematic under-capture.
 
 ## 6. Extension: is a missing grade group random?
 
 ```{r}
 ea <- filter(ext, part == "Grade missing, by age (baseline cohort)"); et <- filter(ext, part == "Treated, by grade (capture cohort)")
 row <- function(d, g) d[d$group == g, ]
-kable(ext |> select(-systemic_only) |> mutate(across(pct:ci_upper, f1)),
+kable(ext |> mutate(across(pct:ci_upper, f1)),
       col.names = c("", "Group", "Patients", "Count", "%", "95% CI low", "95% CI high"),
       caption = "Table 4. Grade missing by age (baseline cohort) and treatment, linked days 0-365, by grade (capture cohort). 95% CI: Wilson score.")
 ```

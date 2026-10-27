@@ -132,6 +132,15 @@ gain <- tibble(comparison = "Linked minus claims (= EHR-only share)",
                n = n_cap, n_ehr_only = n_ehr_only, pct = 100 * n_ehr_only / n_cap,
                ci_lower = 100 * gain_ci[1], ci_upper = 100 * gain_ci[2])
 
+#what the EHR-only patients have: oral ADT only without Part D (claims cannot see it) vs anything else
+ehr_only_detail <- tx %>%
+  filter(patient_id %in% flags$patient_id[!flags$tx_claims & flags$tx_ehr]) %>%
+  group_by(patient_id) %>%
+  summarise(oral_adt_only = all(code == "EH_ADT_ORAL")) %>%
+  left_join(select(flags, patient_id, part_d), by = "patient_id") %>%
+  summarise(n_ehr_only = n(), oral_adt_no_part_d = sum(oral_adt_only & part_d == 0),
+            other = n_ehr_only - oral_adt_no_part_d)
+
 #treatment patterns in five mutually exclusive groups
 pattern_levels <- c("No recorded treatment", "Prostatectomy only", "Radiation only",
                     "Systemic therapy only", "Multiple modalities")
@@ -200,7 +209,7 @@ missing_by_age <- baseline_grade %>%
 # (b) How often is each grade treated, linked days 0-365? (capture cohort)
 treated_by_grade <- capture_grade %>%
   group_by(group = grade_cat) %>%
-  summarise(n = n(), count = sum(tx_linked), systemic_only = sum(pattern == "Systemic therapy only")) %>%
+  summarise(n = n(), count = sum(tx_linked)) %>%
   mutate(part = "Treated, by grade (capture cohort)")
 
 extension <- bind_rows(missing_by_age, treated_by_grade) %>%
@@ -209,7 +218,7 @@ extension <- bind_rows(missing_by_age, treated_by_grade) %>%
          ci_lower = 100 * prop.test(count, n, correct = FALSE)$conf.int[1],
          ci_upper = 100 * prop.test(count, n, correct = FALSE)$conf.int[2]) %>%
   ungroup() %>%
-  select(part, group, n, count, pct, ci_lower, ci_upper, systemic_only)
+  select(part, group, n, count, pct, ci_lower, ci_upper)
 
 
 # Plots -----------------------------------------------------------------
@@ -250,7 +259,7 @@ plot_x <- ggplot(filter(extension, part == "Treated, by grade (capture cohort)")
   scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
   scale_y_continuous(limits = c(0, 100)) +
   labs(x = "Baseline grade group", y = "Treated in days 0-365, linked records (%)",
-       title = "Extension. Missing grade: treated between low and high grades (intervals overlap)",
+       title = "Extension. Missing grade: treated between low and high grades",
        subtitle = sprintf("Capture cohort, n = %d; grade missing for %d", n_cap, sum(capture_grade$grade_missing)),
        caption = "Wilson score 95% CI. Descriptive; not adjusted for age or other factors.") +
   theme_minimal(base_size = 12)
@@ -264,6 +273,7 @@ write_csv(capture_tbl,    file.path(tables_dir, "table2_treatment_capture.csv"))
 write_csv(mortality,      file.path(tables_dir, "table3_mortality.csv"))
 write_csv(agreement,      file.path(tables_dir, "agreement_counts.csv"))
 write_csv(gain,           file.path(tables_dir, "linked_minus_claims.csv"))
+write_csv(ehr_only_detail, file.path(tables_dir, "ehr_only_detail.csv"))
 write_csv(patterns,       file.path(tables_dir, "treatment_patterns.csv"))
 write_csv(fitness,        file.path(tables_dir, "data_fitness.csv"))
 write_csv(extension,      file.path(tables_dir, "extension_missing_grade.csv"))
