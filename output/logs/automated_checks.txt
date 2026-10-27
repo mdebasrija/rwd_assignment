@@ -1,0 +1,17 @@
+[PASS] Linkage: no ID is missing or repeated in the crosswalk
+[PASS] Linkage: roster and crosswalk contain the same patients
+[PASS] Linkage: every event row matched the crosswalk (none lost in the join)
+[PASS] Linkage: the joined patient table has one row per roster patient
+[PASS] Window: all 2 real treatment events on day 365 are counted
+[PASS] Window: none of the 2 real treatment events on day 366 is counted
+[PASS] Once per patient: 25 capture patients have repeated treatment rows, flags still have one row per patient
+[PASS] Once per patient: 134 patients treated in both sources are counted once in the linked total
+[PASS] PSA tests are never counted as treatment
+[PASS] Effective end = death date for all 84 patients whose claims span runs past death
+[PASS] Agreement and pattern groups each add up to the capture cohort
+[PASS] Linked minus claims equals the EHR-only count
+[PASS] Mortality uses the baseline cohort denominator
+[PASS] Extension: age groups add up to the baseline cohort
+[PASS] Extension: grade categories add up to the capture cohort
+[PASS] Extension: missing-grade count matches the data-fitness table
+All checks passed

@@ -3,9 +3,13 @@ data/*
 !data/CHECKSUMS.sha256 
 !data/.gitkeep
 
-# should rebuild through scripts
+# should rebuild through scripts, the ones kept are according to the brief
 output/* 
 !output/.gitkeep
+!output/report.html
+!output/figures/
+!output/logs/
+output/logs/sessionInfo.txt
 
 # RStudio data, not needed
 .Rproj.user/

@@ -1,0 +1,41 @@
+check,n_flagged
+Index date blank or invalid,0
+"Death date invalid (blank allowed, no death)",0
+Claims span blank or invalid,0
+EHR span blank or invalid,0
+Event date (Claims/EHR) blank or invalid,0
+Cells with leading/trailing spaces,0
+age_at_index not a whole number,0
+part_d not 0 or 1,0
+PSA present but not a number,0
+PSA zero or negative,0
+PSA blank (reporting but expected),138
+Grade group present but not 1-5,1
+Grade blank (reporting but expected),209
+index_date outside 2018-2021,0
+age_at_index outside 18-120,0
+Death before index date,0
+Death after cutoff date,0
+Claims observation start after end,0
+Claims observation end after cutoff,0
+EHR observation start after end,0
+EHR observation end after cutoff,0
+Event after cutoff,0
+Duplicate patient_id in roster,0
+Crosswalk: blank or repeated ID (any column),0
+Roster patients missing from crosswalk,0
+Crosswalk claims_id not in claims_patients,0
+Crosswalk ehr_id not in ehr_patients,0
+Duplicate claims_id in claims_patients,0
+Duplicate ehr_id in ehr_patients,0
+Claims event claims_id not in crosswalk,0
+EHR event ehr_id not in crosswalk,0
+source + code not unique in code_map,0
+Event code not in code_map,0
+Exact duplicate rows in claims_events (expected; kept but reported),118
+Exact duplicate rows in ehr_events (expected; kept but reported),114
+Claims event outside claims observation span,0
+EHR event outside EHR observation span,0
+Event after death,0
+Claims recorded end after death (artefact; truncated),84
+EHR recorded end after death (artefact; truncated),86

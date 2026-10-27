@@ -53,8 +53,10 @@ test_log <- capture.output({
   check(sprintf("Once per patient: %d capture patients have repeated treatment rows, flags still have one row per patient",
                 n_distinct(repeated$patient_id)),
         nrow(repeated) > 0 && nrow(flags) == nrow(capture_cohort) && !anyDuplicated(flags$patient_id))
-  check("Once per patient: patients treated in both sources count once in the linked total",
-        capture_tbl$n_treated[3] == nrow(flags) - sum(!flags$tx_linked))
+  n_both <- sum(flags$tx_claims & flags$tx_ehr)
+  check(sprintf("Once per patient: %d patients treated in both sources are counted once in the linked total", n_both),
+        n_both > 0 &&
+          capture_tbl$n_treated[3] == capture_tbl$n_treated[1] + capture_tbl$n_treated[2] - n_both)
   check("PSA tests are never counted as treatment", all(tx$event_type == "treatment"))
   
   # Other rules and totals - effective end, capture cohort, linked - claims = EHR

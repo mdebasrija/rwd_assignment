@@ -291,7 +291,7 @@ psa_rows   <- rawfiles$ehr_patients[bad_psa, ]
 issues <- bind_rows(
   tibble(file = "ehr_patients.csv", record_id = grade_rows$ehr_id, column = "grade_group",
          original_value = grade_rows$grade_group, issue = "Grade group outside 1-5",
-         action = "Set to missing", reason = "Grade group outside 1-5",
+         action = "Set to missing", reason = "Valid ISUP grade groups are 1-5; no supported correction",
          likely_impact = "Grade missingness up by this count"),
   tibble(file = "ehr_patients.csv", record_id = psa_rows$ehr_id, column = "baseline_psa_ng_ml",
          original_value = psa_rows$baseline_psa_ng_ml, issue = "PSA not a positive number",
@@ -300,7 +300,22 @@ issues <- bind_rows(
   tibble(file = c("claims_events.csv", "ehr_events.csv"), record_id = "(summary)",
          column = "(whole row)", original_value = paste(c(dup_claims_rows, dup_ehr_rows), "identical rows"),
          issue = "Repeated identical rows", action = "Kept; each patient counted once per source",
-         reason = "No event ID; repeats are expected", likely_impact = "None on yes/no treatment flags")
+         reason = "No event ID; repeats are expected", likely_impact = "None on yes/no treatment flags"),
+  tibble(file = "ehr_patients.csv", record_id = "(summary)",
+         column = c("baseline_psa_ng_ml", "grade_group"),
+         original_value = paste(c(sum(is.na(psa)), sum(is.na(grade))), "blank cells"),
+         issue = "Missing baseline value (expected)",
+         action = "Kept as missing; not imputed; grade 'Missing' kept as its own category",
+         reason = "Brief: do not impute PSA or grade",
+         likely_impact = "Median PSA uses valid values only; grade analyses must show Missing"),
+  tibble(file = c("claims_patients.csv", "ehr_patients.csv"), record_id = "(summary)",
+         column = "observation_end",
+         original_value = paste(c(sum(claims_end_after_death, na.rm = TRUE),
+                                  sum(ehr_end_after_death, na.rm = TRUE)), "spans end after death"),
+         issue = "Recorded span runs past death (administrative artefact)",
+         action = "Truncated at death date (effective end)",
+         reason = "No observation after death",
+         likely_impact = "Removes post-death observation; affects step 3 eligibility only")
 )
 
 write_csv(checks, here("output", "logs", "data_checks_summary.csv"))

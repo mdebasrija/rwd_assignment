@@ -151,6 +151,11 @@ mortality <- tibble(endpoint = "All-cause death, days 0-365 after diagnosis (reg
                     pct = 100 * n_deaths / n_base,
                     ci_lower = 100 * mort_ci[1], ci_upper = 100 * mort_ci[2])
 
+#what happens if we take the capture cohort by mistake?
+capture_deaths <- tibble(n = n_cap,
+                         deaths = sum(capture_cohort$death_date <= capture_cohort$day365, na.rm = TRUE),
+                         pct = 100 * deaths / n)
+
 
 # Data fitness in the capture cohort -------------------------------------------
 
@@ -217,8 +222,8 @@ plot_a <- ggplot(capture_tbl, aes(factor(view, levels = view), pct)) +
   scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
   scale_y_continuous(limits = c(0, 100)) +
   labs(x = NULL, y = "Patients with a recorded treatment, days 0-365 (%)",
-       title = sprintf("Plot A. Linking EHR and claims adds %.1f points to claims alone (%.1f%% to %.1f%%)",
-                       capture_tbl$pct[3] - capture_tbl$pct[1], capture_tbl$pct[1], capture_tbl$pct[3]),
+       title = sprintf("Plot A. Linking EHR and claims adds %.1f points to claims alone",
+                       capture_tbl$pct[3] - capture_tbl$pct[1]),
        subtitle = sprintf("Capture cohort, n = %d patients (same patients in every column)", n_cap),
        caption = "Error bars: Wilson score 95% confidence intervals") +
   theme_minimal(base_size = 12)
@@ -245,7 +250,7 @@ plot_x <- ggplot(filter(extension, part == "Treated, by grade (capture cohort)")
   scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
   scale_y_continuous(limits = c(0, 100)) +
   labs(x = "Baseline grade group", y = "Treated in days 0-365, linked records (%)",
-       title = "Extension. Missing grade: treated more than grades 1-2, less than 4-5",
+       title = "Extension. Missing grade: treated between low and high grades (intervals overlap)",
        subtitle = sprintf("Capture cohort, n = %d; grade missing for %d", n_cap, sum(capture_grade$grade_missing)),
        caption = "Wilson score 95% CI. Descriptive; not adjusted for age or other factors.") +
   theme_minimal(base_size = 12)
@@ -263,6 +268,7 @@ write_csv(patterns,       file.path(tables_dir, "treatment_patterns.csv"))
 write_csv(fitness,        file.path(tables_dir, "data_fitness.csv"))
 write_csv(extension,      file.path(tables_dir, "extension_missing_grade.csv"))
 write_csv(step3,          file.path(tables_dir, "step3_exclusions.csv"))
+write_csv(capture_deaths, file.path(tables_dir, "mortality_in_capture_cohort_for_comparison.csv"))
 
 ggsave(here("output", "figures", "plotA_capture.png"),   plot_a, width = 7, height = 5)
 ggsave(here("output", "figures", "plotB_patterns.png"),  plot_b, width = 8, height = 4.5)

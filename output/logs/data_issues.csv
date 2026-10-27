@@ -1,0 +1,8 @@
+file,record_id,column,original_value,issue,action,reason,likely_impact
+ehr_patients.csv,EH81006,grade_group,7,Grade group outside 1-5,Set to missing,Valid ISUP grade groups are 1-5; no supported correction,Grade missingness up by this count
+claims_events.csv,(summary),(whole row),118 identical rows,Repeated identical rows,Kept; each patient counted once per source,No event ID; repeats are expected,None on yes/no treatment flags
+ehr_events.csv,(summary),(whole row),114 identical rows,Repeated identical rows,Kept; each patient counted once per source,No event ID; repeats are expected,None on yes/no treatment flags
+ehr_patients.csv,(summary),baseline_psa_ng_ml,138 blank cells,Missing baseline value (expected),Kept as missing; not imputed; grade 'Missing' kept as its own category,Brief: do not impute PSA or grade,Median PSA uses valid values only; grade analyses must show Missing
+ehr_patients.csv,(summary),grade_group,209 blank cells,Missing baseline value (expected),Kept as missing; not imputed; grade 'Missing' kept as its own category,Brief: do not impute PSA or grade,Median PSA uses valid values only; grade analyses must show Missing
+claims_patients.csv,(summary),observation_end,84 spans end after death,Recorded span runs past death (administrative artefact),Truncated at death date (effective end),No observation after death,Removes post-death observation; affects step 3 eligibility only
+ehr_patients.csv,(summary),observation_end,86 spans end after death,Recorded span runs past death (administrative artefact),Truncated at death date (effective end),No observation after death,Removes post-death observation; affects step 3 eligibility only
