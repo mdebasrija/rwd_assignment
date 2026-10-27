@@ -1,0 +1,7 @@
+Plan for Analysis: EHR and claims linked treatment assessment in prostate cancer patients
+
+Date: 27 October, 2026 (80 words)
+Cohorts: Baseline, age 66 and above - EHR+claims data (crosswalk-joined) for 365 days lookback from index date, Capture: Baseline (nested) also observed through 365 days post index date using effective end. Treatment (Capture): code_map "treatment", days 0-365 both inclusive, describe statistics overall and for different modalities. Report claims/EHR/either linked proportions + Wilson's CI, treating groups as paired. Describe the agreement between either source. Mortality (Baseline): death by day 365, all-cause, Wilson's CI. Assess data reliability and log it. 
+
+Changes:
+
