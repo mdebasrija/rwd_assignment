@@ -1,0 +1,18 @@
+# patient level data should never be committed, except checksums which may be useful to check integrity
+data/* 
+!data/CHECKSUMS.sha256 
+!data/.gitkeep
+
+# should rebuild through scripts
+output/* 
+!output/.gitkeep
+
+# RStudio data, not needed
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.positai
+
+# Supplied assignment brief (not my work so keeping private)
+Assignment_and_Data_Guide.pdf
