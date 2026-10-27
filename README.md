@@ -59,6 +59,7 @@ sources only the last script, which runs the whole chain once, in order.
 - Unfinished: robustness checks for the extension. Next I would run sensitivity
   analyses (each source alone, Part D patients only, age 80 or under vs 81+, a
   shorter window such as 180 days) and adjust the grade comparison for age.
+- More hand-built tests that break specifically on edge cases such as a death on day 365/leap years. 
 
 ## AI usage disclosure
 
