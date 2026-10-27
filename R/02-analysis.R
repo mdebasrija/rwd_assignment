@@ -217,7 +217,7 @@ plot_a <- ggplot(capture_tbl, aes(factor(view, levels = view), pct)) +
   scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
   scale_y_continuous(limits = c(0, 100)) +
   labs(x = NULL, y = "Patients with a recorded treatment, days 0-365 (%)",
-       title = sprintf("Plot A. Linking adds %.1f points to claims alone (%.1f%% to %.1f%%)",
+       title = sprintf("Plot A. Linking EHR and claims adds %.1f points to claims alone (%.1f%% to %.1f%%)",
                        capture_tbl$pct[3] - capture_tbl$pct[1], capture_tbl$pct[1], capture_tbl$pct[3]),
        subtitle = sprintf("Capture cohort, n = %d patients (same patients in every column)", n_cap),
        caption = "Error bars: Wilson score 95% confidence intervals") +
@@ -263,7 +263,6 @@ write_csv(patterns,       file.path(tables_dir, "treatment_patterns.csv"))
 write_csv(fitness,        file.path(tables_dir, "data_fitness.csv"))
 write_csv(extension,      file.path(tables_dir, "extension_missing_grade.csv"))
 write_csv(step3,          file.path(tables_dir, "step3_exclusions.csv"))
-write_csv(capture_deaths, file.path(tables_dir, "mortality_in_capture_cohort_for_comparison.csv"))
 
 ggsave(here("output", "figures", "plotA_capture.png"),   plot_a, width = 7, height = 5)
 ggsave(here("output", "figures", "plotB_patterns.png"),  plot_b, width = 8, height = 4.5)
