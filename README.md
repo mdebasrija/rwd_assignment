@@ -16,6 +16,15 @@ Requirements: R >= 4.1 (built with R 4.6.0) with `here`, `readr`, `dplyr`, `purr
 each run also writes `output/logs/sessionInfo.txt`. No random numbers are used, so
 no seed is needed. Also requires `pandoc` >= 2.8 (comes bundled with RStudio but needs to be installed if opening on CLI).
 
+
+**Data disclaimer.** The files in `data/` are **synthetic**. They were generated for a 
+take-home assessment and describe no real people. They are included only so the 
+pipeline can be run end to end. Real patient-level claims or EHR data must never be 
+committed to a repository, public or private: in real work the data stay in an 
+approved, access-controlled environment, and only code and aggregate, de-identified 
+outputs are shared. The assignment brief (`Assignment_and_Data_Guide.pdf`) is 
+included for context and belongs to its authors.
+
 ## Structure
 
 ```
@@ -27,7 +36,7 @@ R/02-analysis.R      sources 01; cohorts, treatment capture, agreement, patterns
 R/03-tests.R         sources 02; automated checks on the real data; stops on failure
 report.Rmd           the report; reads results from output/ (only re-verifies checksums)
 plan_analysis.txt    dated plan + change log
-data/                supplied CSVs, never modified (checked against CHECKSUMS.sha256)
+data/                supplied synthetic CSVs, never modified (checked against CHECKSUMS.sha256)
 output/
   tables/            result tables (CSV)
   figures/           Plot A, Plot B, extension plot (PNG)

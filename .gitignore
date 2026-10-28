@@ -1,7 +1,6 @@
 # patient level data should never be committed, except checksums which may be useful to check integrity
-data/* 
-!data/CHECKSUMS.sha256 
-!data/.gitkeep
+#data/* 
+#holds synthetic data supplied for the assignment, committed so the pipeline runs end to end.
 
 # should rebuild through scripts, the ones kept are according to the brief
 output/* 
@@ -18,5 +17,5 @@ output/logs/sessionInfo.txt
 .Ruserdata
 .positai
 
-# Supplied assignment brief (not my work so keeping private)
-Assignment_and_Data_Guide.pdf
+# Supplied assignment brief (was not shared initially, shared for understanding the brief)
+#Assignment_and_Data_Guide.pdf
