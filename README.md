@@ -14,7 +14,7 @@ written to `output/`; the report is `output/report.html`.
 Requirements: R >= 4.1 (built with R 4.6.0) with `here`, `readr`, `dplyr`, `purrr`,
 `ggplot2`, `digest`, `rmarkdown`, `knitr`. Exact versions are pinned in `renv.lock`;
 each run also writes `output/logs/sessionInfo.txt`. No random numbers are used, so
-no seed is needed.
+no seed is needed. Also requires `pandoc` >= 2.8 (comes bundled with RStudio but needs to be installed if opening on CLI).
 
 ## Structure
 
